@@ -1,4 +1,13 @@
 /*
+* authro by jiangdou  QQ:344283973
+* E-mail:jiangdouu88@126.com
+* time at 2015-04-27
+* sun4i-ts.c  为驱动文件，直接替换/drivers/input/touchscreen/sun4i-ts.c
+
+*/
+
+
+/*
 *
 *
 
@@ -499,25 +508,7 @@ static void report_single_point_implement(struct sunxi_ts_data *ts_data, struct 
 
 	//print_dou("jiangdou_tp__________________________x1:%d_____y1:%d\n", sample_data->x, sample_data->y);
     input_report_abs(ts_data->input, ABS_MT_TOUCH_MAJOR,800);
-#if 0	
-	sample_data->x = (106458*((4096 - sample_data->x) - 180))/100000;
-    //input_report_abs(ts_data->input, ABS_MT_POSITION_X, sample_data->x);
-    //sample_data->y = 4096 - sample_data->y;
-	sample_data->y = (107758*(sample_data->y - 165))/100000; //107658
-	
-#endif
-	sample_data->y = 4096 - sample_data->y;
-	
-	print_dou("\njiangdou_tp__________________________x2:%d_____y2:%d\n", sample_data->x, sample_data->y);
-	input_report_abs(ts_data->input, ABS_MT_POSITION_X, sample_data->x);
-    input_report_abs(ts_data->input, ABS_MT_POSITION_Y, sample_data->y);   
 
-   /* printk("report single point: x = %d, y = %d\n                  \
-            sample_data->dx = %d, sample_data->dy = %d. \n",      \
-            sample_data->x, sample_data->y, sample_data->dx, sample_data->dy);
-
-   printk("yxchen:report single point: x = %d,sample_data->y = %d. \n", sample_data->x, sample_data->y);
-*/
     
     input_mt_sync(ts_data->input);                 
     input_sync(ts_data->input);
@@ -732,31 +723,7 @@ static void filter_zoom_in_data(struct ts_sample_data * report_data, struct ts_s
 
 	index = zoom_in_buffer_cnt%ZOOM_IN_OUT_BUFFER_SIZE;
 	zoom_in_data_buffer[index].dx = sample_data->dx;
-	zoom_in_data_buffer[index].dy = sample_data->dy;
-	zoom_in_data_buffer[index].x = sample_data->x;
-	zoom_in_data_buffer[index].y = sample_data->y;
-	        
-	if(zoom_in_buffer_cnt > (ZOOM_IN_OUT_BUFFER_SIZE<<10)){
-		zoom_in_buffer_cnt -= (ZOOM_IN_OUT_BUFFER_SIZE<<9);
-	}
-	        
-	if(zoom_in_buffer_cnt >= ZOOM_IN_OUT_BUFFER_SIZE){
-		index = ZOOM_IN_OUT_BUFFER_SIZE - 1;
-	} 
-	/* index mean the real count. */
-	sample_data->dx = 0;
-	sample_data->dy = 0;
-	sample_data->x = 0;
-	sample_data->y = 0;
-	count = 0;
-	for (i = 0; i <=  index; i++) {
-		sample_data->dx += zoom_in_data_buffer[i].dx;
-		sample_data->dy += zoom_in_data_buffer[i].dy;
-		sample_data->x += zoom_in_data_buffer[i].x;
-		sample_data->y += zoom_in_data_buffer[i].y;
-		count++;
-	}
-      
+	
 	sample_data->dx /= count;
 	sample_data->dy /= count;
 	sample_data->x /= count;
@@ -789,29 +756,7 @@ static void filter_zoom_out_data(struct ts_sample_data * report_data, struct ts_
 		zoom_out_buffer_cnt -= (ZOOM_IN_OUT_BUFFER_SIZE<<9);
 	}
 	        
-	if (zoom_out_buffer_cnt >= ZOOM_IN_OUT_BUFFER_SIZE) {
-		index = ZOOM_IN_OUT_BUFFER_SIZE - 1;
-	}
-	/* index mean the real count. */
-	sample_data->dx = 0;
-	sample_data->dy = 0;
-	sample_data->x = 0;
-	sample_data->y = 0;
-	count = 0;
-	        
-	for(i = 0; i <=  index; i++) {
-		sample_data->dx += zoom_out_data_buffer[i].dx;
-		sample_data->dy += zoom_out_data_buffer[i].dy;
-		sample_data->x += zoom_out_data_buffer[i].x;
-		sample_data->y += zoom_out_data_buffer[i].y;
-		count++;
-	}
-      
-	sample_data->dx /= count;
-	sample_data->dy /= count;
-	sample_data->x /= count;
-	sample_data->y /= count;
-
+	
 	report_data->x = sample_data->x;
 	report_data->y = sample_data->y;
 	report_data->dx = sample_data->dx;
@@ -843,28 +788,7 @@ static int filter_double_point(struct sunxi_ts_data *ts_data, struct ts_sample_d
 	    
 	if(delta_ds > HOLD_DS_LIMIT){                    /* zoom in */
 	        
-		if(ZOOM_OUT == zoom_flag) {                    /* zoom in when zoom out */
-			if(delta_ds > min(GLIDE_DELTA_DS_MAX_LIMIT, (GLIDE_DELTA_DS_MAX_TIMES*accmulate_zoom_out_ds/zoom_out_count))) {
-				/* noise */
-				cur_sample_ds = prev_sample_ds;            /* discard the noise, and can not be reference. */
-				dprintk(DEBUG_FILTER_DOUBLE_POINT_STATUS_INFO, "sunxi-ts: noise, zoom in when zoom out. \n");
-				ret = TRUE;
-			} else {
-				/* normal zoom in */
-				zoom_change_cnt++;
-				accmulate_zoom_in_ds += delta_ds;
-				zoom_in_count++;
-				if(zoom_change_cnt > ZOOM_IN_CNT_LIMIT) {
-					dprintk(DEBUG_FILTER_DOUBLE_POINT_STATUS_INFO, "change to ZOOM_IN from ZOOM_OUT. \n");
-					change_to_zoom_in(ts_data, sample_data);
-					filter_zoom_in_data_init();
-					filter_zoom_in_data(&prev_report_samp, sample_data);
-				} else {
-					dprintk(DEBUG_FILTER_DOUBLE_POINT_STATUS_INFO, "sunxi-ts: normal zoom in, but this will cause twitter. \n");
-					ret = TRUE;
-				}
-			}
-		} else  if(ZOOM_IN == zoom_flag) {
+		
 			if(delta_ds > min(GLIDE_DELTA_DS_MAX_LIMIT, (GLIDE_DELTA_DS_MAX_TIMES*accmulate_zoom_in_ds/zoom_in_count))){
 				cur_sample_ds = prev_sample_ds;            /* discard the noise, and can not be reference. */
 				ret = TRUE;
@@ -877,28 +801,7 @@ static int filter_double_point(struct sunxi_ts_data *ts_data, struct ts_sample_d
 			accmulate_zoom_out_ds = 0;
 			zoom_out_count = 0;
 		}else if (ZOOM_INIT_STATE == zoom_flag ||ZOOM_STATIC == zoom_flag) {
-			zoom_in_count++;
-			if(zoom_in_count > (ZOOM_CHANGE_LIMIT_CNT + FIRST_ZOOM_IN_COMPENSTATE)) {
-				accmulate_zoom_in_ds = delta_ds;
-				zoom_in_count = 1;
-				if(ZOOM_INIT_STATE == zoom_flag) {
-					orientation_flag = judge_zoom_orientation(sample_data);
-					report_up_event_implement(ts_data);
-				}
-				filter_zoom_in_data_init();
-				filter_zoom_in_data(&prev_report_samp, sample_data);
-				dprintk(DEBUG_FILTER_DOUBLE_POINT_STATUS_INFO, "change to ZOOM_IN from ZOOM_INIT_STATE. \n");
-				change_to_zoom_in(ts_data, sample_data);
-				#if 1
-				dprintk(DEBUG_FILTER_DOUBLE_POINT_STATUS_INFO, "ZOOM_INIT_STATE: delta_ds= %d. \n", delta_ds);
-				#endif
-			} else	{
-				ret = TRUE;
-			}
-		}        
-	} else if (delta_ds<(-HOLD_DS_LIMIT)) {                        /* zoom out */   
-		delta_ds = -delta_ds;
-		        
+			
 		if(ZOOM_IN == zoom_flag) {                                   /* zoom out when zoom in */
 			dprintk(DEBUG_FILTER_DOUBLE_POINT_STATUS_INFO, "delta_ds = %d, (4*accmulate_zoom_in_ds/zoom_in_count) = %d. \n", \
 				-delta_ds, (4*accmulate_zoom_in_ds/zoom_in_count));
@@ -964,18 +867,7 @@ static int filter_double_point(struct sunxi_ts_data *ts_data, struct ts_sample_d
 		if (unlikely(ZOOM_INIT_STATE == zoom_flag )) {
 			dprintk(DEBUG_FILTER_DOUBLE_POINT_STATUS_INFO, "ZOOM_INIT_STATE: delta_ds == %d. \n", delta_ds);
 			if(hold_cnt <= ZOOM_CHANGE_LIMIT_CNT) { //discard the first 3 point
-				ret = TRUE;
-			} else {
-				/* when change to static mode, and not know orientation yet, need judge orientation. */
-				orientation_flag = judge_zoom_orientation(sample_data); 
-				report_up_event_implement(ts_data);
-				zoom_flag = ZOOM_STATIC;
-				change_to_double_mode(ts_data);
-				memcpy((void*)&prev_report_samp, (void*)sample_data, sizeof(*sample_data));
-			}
-		} else {
-			memcpy((void*)sample_data, (void*)&prev_report_samp, sizeof(*sample_data));
-		} 			
+		
 	}
 	return ret;
 }
@@ -1071,115 +963,6 @@ static void report_data(struct sunxi_ts_data *ts_data, struct ts_sample_data *sa
 	return;
 }
 
-static void report_up_event(unsigned long data)
-{
-	struct sunxi_ts_data *ts_data = (struct sunxi_ts_data *)data;
-
-	/*when the time is out, and the buffer data can not affect the timer to re-timing immediately,
-	*this will happen, 
-	*from this we can conclude, the delay_time is not proper, need to be longer
-	*/
-	if (ts_data->buffer_head != ts_data->buffer_tail) { 
-		mod_timer(&data_timer, jiffies + ts_data->ts_delay_period);
-		/* direct calling tasklet, do not use int bottom half, may result in some bad behavior.!!! */
-		tp_do_tasklet(ts_data->buffer_head); 
-		return;
-	}
-	report_up_event_implement(ts_data);
-	return;
-}
-
-static void process_data(struct sunxi_ts_data *ts_data, struct ts_sample_data *sample_data)
-{
-	ts_data->touchflag = 1;
-	if (((sample_data->dx) > DUAL_TOUCH)&&((sample_data->dy) > DUAL_TOUCH)) {
-	 	ts_data->touchflag = 2;
-	 	ts_data->double_point_cnt++;
-		if (UP_TOUCH_MODE == touch_mode ) {
-			dprintk(DEBUG_ORIENTATION_INFO, "sunxi-ts: need to get the single point. \n");
-			
-			reference_point_flag = 0;
-			touch_mode = SINGLE_TOUCH_MODE;
-		}
-		if(ts_data->double_point_cnt > DOUBLE_CNT_LIMIT) {
-			if(sample_data->dx < MAX_DELTA_X && sample_data->dy < MAX_DELTA_Y) { 
-				if(SINGLE_TOUCH_MODE == touch_mode){
-					touch_mode = CHANGING_TO_DOUBLE_TOUCH_MODE;
-					orientation_flag = 0;
-					filter_double_point_init(sample_data, 1);
-					dprintk(DEBUG_ORIENTATION_INFO, "sunxi-ts: CHANGING_TO_DOUBLE_TOUCH_MODE orientation_flag == %d . \n", \
-						orientation_flag);
-					return;
-				}
-				//report_double_point(ts_data, sample_data);
-			}
-		}   
-	} else if(1 == ts_data->touchflag) {
-		if (DOUBLE_TOUCH_MODE == touch_mode ) {
-			/* normally, to really change to single_touch_mode, spend about 100ms */
-			/* discard old data, remain in double_touch_mode,and change to ZOOM_INIT_STATE */
-			if(6 == ts_data->single_touch_cnt ) {                         
-				filter_zoom_in_data_init();
-				filter_zoom_out_data_init(); 
-				prev_single_sample.x = sample_data->x;
-				prev_single_sample.y = sample_data->y;
-				reference_point_flag = 1;
-				orientation_flag = 0;
-				filter_double_point_init(sample_data, 0);
-			} else if (ts_data->single_touch_cnt > 6) {                   /* update prev_single_sample */
-				prev_single_sample.x = sample_data->x;
-				prev_single_sample.y = sample_data->y;
-				reference_point_flag = 1;
-			}
-			report_data(ts_data, sample_data);
-		/*remain in single touch mode */	
-		} else if (SINGLE_TOUCH_MODE == touch_mode  ||UP_TOUCH_MODE == touch_mode  || CHANGING_TO_DOUBLE_TOUCH_MODE == touch_mode) {
-			if (SINGLE_TOUCH_MODE == touch_mode  ||UP_TOUCH_MODE == touch_mode) {
-				prev_single_sample.x = sample_data->x;
-				prev_single_sample.y = sample_data->y;
-				reference_point_flag = 1;
-			}
-			if(SINGLE_TOUCH_MODE != touch_mode)
-				change_to_single_touch_mode();
-	                 
-			report_single_point(ts_data, sample_data);
-		}                    
-	}
-    
-	return;
-}
-
-void tp_do_tasklet(unsigned long data)
-{
-	struct sunxi_ts_data *ts_data = mtTsData;
-	struct ts_sample_data *sample_data;
-	int head = 0;
-	int tail = 0;
-
-	if (1 == spin_trylock(&tp_do_tasklet_sync)) {
-		if(1 == tp_do_tasklet_running) {
-			spin_unlock(&tp_do_tasklet_sync);
-			return;	
-		} else {
-			tp_do_tasklet_running = 1;
-			spin_unlock(&tp_do_tasklet_sync);
-		}
-	} else {
-		return;	
-	}	    	
-	head = (int)data;
-	tail = (int)ts_data->buffer_tail;                    /* tail may have changed, while the data is remain? */
-
-	if((tail + CYCLE_BUFFER_SIZE*2) < head)              /* tail have been modify to avoid overflow */
-		goto out;
-    
-	dprintk(DEBUG_TASKLET_INFO, "enter tasklet. head = %d, tail = %d. jiffies == %lu. \n", head, tail, jiffies);
-	    
-	while ((tail) < (head)) {                              /* when tail == head, mean the buffer is empty */
-		sample_data = &cycle_buffer[tail&(CYCLE_BUFFER_SIZE-1)];
-		tail++;
-		dprintk(DEBUG_FILTER_INFO, "sample_data->sample_status == %d, ts_data->ts_process_status == %d \n", \
-			sample_data->sample_status, ts_data->ts_process_status);
 
 #ifdef TP_INT_PERIOD_TEST
 		continue;

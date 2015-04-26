@@ -1,7 +1,12 @@
-//sun4i-ts.c  为驱动文件，直接替换/drivers/input/touchscreen/sun4i-ts.c
+/*
+* authro by jiangdou  QQ:344283973
+* E-mail:jiangdouu88@126.com
+* time at 2015-04-27
+* sun4i-ts.c  为驱动文件，直接替换/drivers/input/touchscreen/sun4i-ts.c
 
+*/
 
-
+//how  get code? plase to 
 git clone https://github.com/jiangdoudou/A20_RTP
 
 一下编译在A20上编译的，
