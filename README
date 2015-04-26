@@ -1,0 +1,12 @@
+#author by jiangdou
+#time at 2015-04-27
+#
+
+file 
+
+tslib -> tslib code
+
+xf86-input-tslib -> code
+
+sun4i-ts.c ->  driver code
+
