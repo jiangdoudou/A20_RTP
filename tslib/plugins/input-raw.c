@@ -43,7 +43,7 @@
 #ifndef ABS_MT_POSITION_X
 #define ABS_MT_POSITION_X       0x35    /* Center X ellipse position */
 #define ABS_MT_POSITION_Y       0x36    /* Center Y ellipse position */
-#define ABS_MT_POSITION_MAJOR	 0x30    /* Press */
+#define ABS_MT_POSITION_MAJOR	 0x30    //modify by jiangdou 2015-04-27
 #endif
 
 #include "tslib-private.h"
@@ -101,6 +101,7 @@ static int check_fd(struct tslib_input *i)
 		!(absbit[BIT_WORD(ABS_Y)] & BIT_MASK(ABS_Y))) {
 		/*fprintf(stderr, "tslib: Selected device is not a touchscreen (must support ABS_X and ABS_Y events)\n");
 		return -1;*/
+		//modify by jiangdou 2015-04-27
 	}
 
 	/* Since some touchscreens (eg. infrared) physically can't measure pressure,
@@ -204,7 +205,7 @@ static int ts_input_read(struct tslib_module_info *inf,
 				case ABS_MT_POSITION_Y:
 					i->current_y = ev.value;
 					break;
- 		               case ABS_MT_TOUCH_MAJOR://add by jiangdou
+ 		               case ABS_MT_TOUCH_MAJOR://add by jiangdou 2015-04-27
                 	       	        i->current_p = ev.value;
                     			break;
 				case ABS_PRESSURE:
