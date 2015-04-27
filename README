@@ -12,9 +12,8 @@ git clone https://github.com/jiangdoudou/A20_RTP
 
 file 
 
-tslib -> tslib code
+tslib -> tslib code   //已作修改，直接编译
 
-xf86-input-tslib -> code
+xf86-input-tslib -> code  //已作修改，直接编译
 
-sun4i-ts.c ->  driver code
-
+sun4i-ts.c ->  driver code  //
