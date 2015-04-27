@@ -2,7 +2,7 @@
 * authro by jiangdou  QQ:344283973
 * E-mail:jiangdouu88@126.com
 * time at 2015-04-27
-* sun4i-ts.c  为驱动文件，直接替换/drivers/input/touchscreen/sun4i-ts.c
+* sun4i-ts.c  为驱动文件(有bug,不要用!!!)，直接替换/drivers/input/touchscreen/sun4i-ts.c  
 
 */
 
