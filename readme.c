@@ -11,6 +11,10 @@ git clone https://github.com/jiangdoudou/A20_RTP
 
 一下编译在A20上编译的，
 
+//注意，必要安装的
+$ sudo apt-get install xorg-dev xserver-xorg-dev x11proto-core-dev git automake make
+
+
 cd tslib
 
 
