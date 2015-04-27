@@ -33,7 +33,7 @@ $ vi /etc/profile
 export TSLIB_TSEVENTTYPE=raw
 export TSLIB_CONSOLEDEVICE=none
 export TSLIB_FBDEVICE=/dev/fb0
-export TSLIB_TSDEVICE=/dev/input/event3 /* manually replace # by input number discovered by dmesg command */
+export TSLIB_TSDEVICE=/dev/input/event_x /* $ cat /proc/bus/input/devices*/
 export TSLIB_CALIBFILE=/usr/etc/pointercal  //次文件是ts_calibrate  校准后的文件，
 export TSLIB_CONFFILE=/usr/etc/ts.conf
 export TSLIB_PLUGINDIR=/usr/lib/ts
