@@ -30,6 +30,8 @@ $ make install
 /* manually add sunxi-ts to /etc/modules */
 $ vi /etc/profile
 
+insmod /home/sun4i-ts.ko  //加载RTP驱动
+
 export TSLIB_TSEVENTTYPE=raw
 export TSLIB_CONSOLEDEVICE=none
 export TSLIB_FBDEVICE=/dev/fb0
